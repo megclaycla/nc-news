@@ -9,4 +9,9 @@ if (!process.env.PGDATABASE) {
   throw new Error('PGDATABASE not set');
 }
 
-module.exports = new Pool();
+const config = {
+  PGDATABASE: process.env.PGDATABASE,
+  PGPASSWORD: process.env.PASSWORD,
+}
+
+module.exports = new Pool(config);
