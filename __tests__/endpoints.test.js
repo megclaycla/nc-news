@@ -4,7 +4,6 @@ const seed = require('../db/seeds/seed');
 const request = require('supertest');
 const testData = require('../db/data/test-data/index');
 const { toBeSortedBy } = require('jest-sorted');
-const endpointsDetails = require('../endpoints.json')
 const endpoints = require("../endpoints.json");
 
 afterAll(() => {
