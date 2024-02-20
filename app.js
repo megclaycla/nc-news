@@ -1,10 +1,10 @@
 const express = require('express');
 const app = express();
-const { getTopics, getEndpoints, getArticleById } = require('./controller/controllers')
+const { getTopics, getEndpoints, getArticleById, getArticles } = require('./controller/controllers')
+const {handlePSQLErrors, handleServerError, handleInvalidEndpoint, handleCustomErrors} = require('./controller/error.controllers')
 
 
 app.use(express.json())
-
 
 app.get('/api/topics', getTopics)
 
@@ -12,20 +12,16 @@ app.get('/api', getEndpoints)
 
 app.get('/api/articles/:article_id', getArticleById)
 
+app.get('/api/articles', getArticles)
 
-app.use((err, request, response, next) => {
-    if(err.code === '22P02'){
-    response.status(400).send({msg: "Bad request"})
-    }
-    next(err)
-})
 
-app.use((err, request, response, next) => {
-    if(err.status && err.msg) {
-    response.status(err.status).send({msg: err.msg})
-    } else if (err.status === 204) {
-    response.status(err.status).send()
-    }
-})
+
+app.all('/*', handleInvalidEndpoint)
+
+app.use(handleCustomErrors)
+
+app.use(handlePSQLErrors)
+
+app.use(handleServerError)
 
 module.exports = app;

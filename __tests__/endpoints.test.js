@@ -34,6 +34,15 @@ describe('GET /api/topics', () => {
             })
         })
     });
+    test('status: 404, repsonds with an error message when route does not exist', () => {
+        return request(app)
+        .get('/api/tropical')
+        .expect(404)
+        .then((response) => {
+            const error = response.body
+            expect(error.msg).toBe("path not found")
+        })
+    });
 });
 
 describe('GET /api', () => {
@@ -63,11 +72,6 @@ describe('GET /api', () => {
     });
 
 describe('GET /api/articles/:article_id', () => {
-    test('should return a 200 status code', () => {
-        return request(app)
-        .get('/api/articles/1')
-        .expect(200)
-    });
     test('should respond with an article object with the following properties', () => {
         return request(app)
         .get('/api/articles/2')
@@ -103,11 +107,88 @@ describe('GET /api/articles/:article_id', () => {
         return request(app)
         .get('/api/articles/999')
         .expect(404)
+        .then((response) => {
+            expect(response.body.msg).toBe('article does not exist');
+        });
     });
     test('should return a 400 status code when passed an invalid article number', () => {
         return request(app)
         .get('/api/articles/pies')
         .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request');
+        });
     });
 });
     
+describe.only('GET /api/articles', () => {
+    test('should return a 200 status code ', () => {
+        return request(app)
+        .get('/api/articles')
+        .expect(200)
+    });
+    test('should respond with articles with the following keys', () => {
+        return request(app)
+        .get('/api/articles')
+        .then((response) => {
+            const articles  = response.body.articles;
+            expect(articles.length).toBe(13)
+            articles.forEach((article) => {
+                expect(article).toHaveProperty("author")
+                expect(article).toHaveProperty("title")
+                expect(article).toHaveProperty("article_id")
+                expect(article).toHaveProperty("topic")
+                expect(article).toHaveProperty("created_at")
+                expect(article).toHaveProperty("votes")
+                expect(article).toHaveProperty("article_img_url")
+                expect(article).toHaveProperty("comment_count");
+            })
+        })
+    });
+    test('should respond with articles with keys of the following types', () => {
+        return request(app)
+        .get('/api/articles')
+        .then((response) => {
+            const articles  = response.body.articles;
+            expect(articles.length).toBe(13)
+            articles.forEach((article) => {
+                expect(typeof article.author).toBe('string');
+                expect(typeof article.title).toBe('string');
+                expect(typeof article.article_id).toBe('number');
+                expect(typeof article.topic).toBe('string');
+                expect(typeof article.created_at).toBe('string');
+                expect(typeof article.votes).toBe('number');
+                expect(typeof article.article_img_url).toBe('string');
+                expect(typeof article.comment_count).toBe('number');
+            })
+        })
+    });
+    test('articles should be sorted by date in descending order ', () => {
+        return request(app)
+        .get('/api/articles')
+        .then((response) => {
+            const { articles } = response.body
+            expect(articles).not.toBeSortedBy('created_at')
+        })
+    });
+    test('should not be a body property present on any of the article objects', () => {
+        return request(app)
+        .get('/api/articles')
+        .then((response) => {
+            const articles  = response.body.articles;
+            
+            articles.forEach((article) => {
+                expect(article).not.toHaveProperty('body');
+            })
+        })
+    });
+    test('status: 404, repsonds with an error message when route does not exist', () => {
+        return request(app)
+        .get('/api/pies')
+        .expect(404)
+        .then((response) => {
+            const error = response.body
+            expect(error.msg).toBe("path not found")
+        })
+    });
+});
