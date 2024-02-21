@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { getTopics, getEndpoints, getArticleById, getArticles } = require('./controller/controllers')
+const { getTopics, getEndpoints, getArticleById, getArticles, getCommentsByArticleId } = require('./controller/controllers')
 const {handlePSQLErrors, handleServerError, handleInvalidEndpoint, handleCustomErrors} = require('./controller/error.controllers')
 
 
@@ -14,7 +14,7 @@ app.get('/api/articles/:article_id', getArticleById)
 
 app.get('/api/articles', getArticles)
 
-
+app.get('/api/articles/:article_id/comments', getCommentsByArticleId)
 
 app.all('/*', handleInvalidEndpoint)
 

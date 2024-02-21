@@ -1,4 +1,4 @@
-const { selectTopics, selectArticleById, selectArticles } = require('../model/models')
+const { selectTopics, selectArticleById, selectArticles, selectCommentsByArticleId } = require('../model/models')
 const endpoints = require("../endpoints.json");
 
 
@@ -38,5 +38,15 @@ const getArticles = (request, response, next) => {
     });
 }
 
+const getCommentsByArticleId = (request, response, next) => {
+    const {article_id }= request.params
+    selectCommentsByArticleId((article_id))
+    .then((comments) => {
+        return response.status(200).send({ comments })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
 
-module.exports = {getTopics, getEndpoints, getArticleById, getArticles};
+module.exports = {getTopics, getEndpoints, getArticleById, getArticles, getCommentsByArticleId};
