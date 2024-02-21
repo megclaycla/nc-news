@@ -59,14 +59,14 @@ function selectArticles(query, sort_by = 'created_at', order = 'DESC') {
     });
 };
 
-function selectAllCommentsForArticle(article_id){
-    return db.query('SELECT * FROM comments WHERE article_id = $1;', [article_id])
+function selectCommentsByArticleId(article_id){
+    return db.query('SELECT * FROM comments WHERE comments.article_id = $1;', [article_id])
     .then(({rows}) => {
         if(rows.length === 0 ) {
             return Promise.reject({status: 404, msg: 'article does not exist'})
         }
-        return rows[0]
+        return rows
     })
 }
 
-module.exports = {selectTopics, selectArticleById, selectArticles, selectAllCommentsForArticle}
+module.exports = {selectTopics, selectArticleById, selectArticles, selectCommentsByArticleId}

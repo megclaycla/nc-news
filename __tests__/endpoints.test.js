@@ -193,11 +193,33 @@ describe('GET /api/articles', () => {
     });
 });
 
-describe.only('GET /api/articles/:article_id/comments', () => {
+describe('GET /api/articles/:article_id/comments', () => {
     test('should return a 200 status code', () => {
         return request(app)
         .get('/api/articles/3/comments')
         .expect(200)
+    });
+    test('should return an array of comments for the given article_id', () => {
+        return request(app)
+        .get('/api/articles/1/comments')
+        .then((commentData) => {
+            expect(commentData.body.comments.length).toBe(11)
+        })
+    });
+    test('each comment should have properties of the following type', () => {
+        return request(app)
+        .get('/api/articles/3/comments')
+        .then((commentData) => {
+            const comments = commentData.body.comments
+            comments.forEach((comment)=> {
+                expect(typeof comment.comment_id).toBe('number')
+                expect(typeof comment.body).toBe('string')
+                expect(typeof comment.article_id).toBe('number')
+                expect(typeof comment.author).toBe('string')
+                expect(typeof comment.created_at).toBe('string')
+                expect(typeof comment.votes).toBe('number')
+            }) 
+        });
     });
     test('GET:400 responds with an appropriate error message when given an invalid id', () => {
         return request(app)
@@ -214,36 +236,5 @@ describe.only('GET /api/articles/:article_id/comments', () => {
         .then((response) => {
         expect(response.body.msg).toBe('article does not exist');
         });
-    });
-    test('each comment should have the following properties', () => {
-        return request(app)
-        .get('/api/articles/3/comments')
-        .expect(200)
-        // .then((articleData) => {
-        //     const article = articleData.body.articles
-        //     expect(article.article_id).toBe(2)
-        //     expect(article.title).toBe('Sony Vaio; or, The Laptop')
-        //     expect(article.topic).toBe('mitch')
-        //     expect(article.author).toBe('icellusedkars')
-        //     expect(article.created_at).toBe('2020-10-16T05:03:00.000Z')
-        //     expect(article.votes).toBe(0)
-        //     expect(article.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
-        // })
-    });
-    test('each comment should have properties of the following type', () => {
-        return request(app)
-        .get('/api/articles/2')
-        .expect(200)
-        // .then((articleData) => {
-        //     const article = articleData.body.articles
-        //     expect(typeof article.article_id).toBe("number")
-        //     expect(typeof article.title).toBe('string')
-        //     expect(typeof article.topic).toBe('string')
-        //     expect(typeof article.author).toBe('string')
-        //     expect(typeof article.body).toBe('string')
-        //     expect(typeof article.created_at).toBe('string')
-        //     expect(typeof article.votes).toBe("number")
-        //     expect(typeof article.article_img_url).toBe('string')
-        // })
     });
 });
