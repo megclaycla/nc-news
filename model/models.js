@@ -106,6 +106,14 @@ function removeCommentById(comment_id) {
     });
 }
 
+
+function selectUsers() {
+    return db.query('SELECT * FROM users;')
+    .then((result) => {
+        return result.rows;
+    });
+}
+
 module.exports = {
     selectTopics, 
     selectArticleById, 
@@ -113,5 +121,6 @@ module.exports = {
     selectCommentsByArticleId, 
     postCommentToArticle, 
     patchVotesOnArticle,
-    removeCommentById
+    removeCommentById,
+    selectUsers
 }
