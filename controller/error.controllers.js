@@ -1,19 +1,20 @@
 function handleInvalidEndpoint(request, response, next){
-    response.status(404).send({msg: "path not found"})
+        response.status(404).send({msg: "path not found"})
 }
 
 function handleCustomErrors(err, request, response, next){
     if(err.status && err.msg) {
         response.status(err.status).send({msg: err.msg})
+    } else if (err.status === 204) {
+            response.status(err.status).send()
     } else next(err)
-    // if (err.status === 204) {
-        //     response.status(err.status).send()
-        // }
     }
     
     function handlePSQLErrors(err, request, response, next) {
         if(err.code === '22P02'){
             response.status(400).send({msg: "Bad request"})
+            } else if(err.code === '23503') {
+                response.status(404).send({msg: 'article does not exist'})
             } else next(err)
     }
 

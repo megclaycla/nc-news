@@ -1,4 +1,10 @@
-const { selectTopics, selectArticleById, selectArticles, selectCommentsByArticleId } = require('../model/models')
+const { 
+    selectTopics, 
+    selectArticleById, 
+    selectArticles, 
+    selectCommentsByArticleId, 
+    postCommentToArticle 
+} = require('../model/models')
 const endpoints = require("../endpoints.json");
 
 
@@ -49,4 +55,24 @@ const getCommentsByArticleId = (request, response, next) => {
     })
 }
 
-module.exports = {getTopics, getEndpoints, getArticleById, getArticles, getCommentsByArticleId};
+const postCommentToArticleController = (request, response, next) => {
+    const { article_id } = request.params
+    const commentToPost = request.body
+    postCommentToArticle(article_id, commentToPost)
+    .then((postedComment) => {
+        console.log("posted comment >>>>", postedComment)
+        return response.status(201).send(postedComment);
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+module.exports = {
+    getTopics, 
+    getEndpoints, 
+    getArticleById, 
+    getArticles, 
+    getCommentsByArticleId, 
+    postCommentToArticleController
+};
