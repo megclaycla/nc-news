@@ -298,7 +298,7 @@ describe('POST /api/articles/:article_id/comments', () => {
     });
     });
 
-describe.only('PATCH /api/articles/:article_id', () => {
+describe('PATCH /api/articles/:article_id', () => {
     test('200: responds with updated article', () => {
         const updateVotes = { inc_votes: 1 };
         return request(app)
@@ -332,7 +332,6 @@ describe.only('PATCH /api/articles/:article_id', () => {
         .send(updateVotes)
         .expect(404)
         .then((response) => {
-
             expect(response.body.msg).toBe('article does not exist');
         });
     });

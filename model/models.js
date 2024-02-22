@@ -89,7 +89,6 @@ function patchVotesOnArticle(article_id, {inc_votes}) {
     WHERE article_id = $2
     RETURNING *;`, [inc_votes, article_id])
     .then(({rows}) => {
-        console.log("rows >>>>", rows[0])
         if(rows.length === 0) {
             return Promise.reject({status: 404, msg: 'article does not exist'})
         }
