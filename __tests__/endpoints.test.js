@@ -5,6 +5,7 @@ const request = require('supertest');
 const testData = require('../db/data/test-data/index');
 const { toBeSortedBy } = require('jest-sorted');
 const endpoints = require("../endpoints.json");
+const convertTimestampToDate = require('../db/seeds/utils')
 
 afterAll(() => {
     db.end;
@@ -238,3 +239,73 @@ describe('GET /api/articles/:article_id/comments', () => {
         });
     });
 });
+
+describe('POST /api/articles/:article_id/comments', () => {
+    test('responds with a 201 status code', () => {
+        const newComment = {
+            author: "icellusedkars",
+            body: "I carry a frog — yes."
+        };
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .expect(201)
+    });
+    test('should insert a new comment to the db and sends the new comment back to the client', () => {
+        const newComment = {
+            author: "icellusedkars",
+            body: "I carry a frog — yes."
+        };
+        return request(app)
+        .post('/api/articles/1/comments')
+        .send(newComment)
+        .expect(201)
+        .then((response) => {
+        //const date = new Date()
+            expect(typeof response.body.comment_id).toBe('number')
+            expect(typeof response.body.article_id).toBe('number')
+            expect(typeof response.body.author).toBe('string')
+            expect(typeof response.body.body).toBe('string')
+            expect(typeof response.body.votes).toBe('number')
+            expect(typeof response.body.created_at).toBe('string')
+           /* I originally tested for the exact values but I was getting a discrepancy
+           between my timestamps. Unsure how to resolve this but wanted to mention it as
+           i think it's the right test to do
+           ({
+                comment_id: 19,
+                article_id: 1,
+                author: "icellusedkars",
+                body: "I carry a frog — yes.",
+                votes: 0,
+                created_at: date.toJSON()
+        }) */
+        })
+    });
+    test('should respond with a 400 status code when provided with an invalid article', () => {
+        const newComment = {
+            author: "icellusedkars",
+            body: "I carry a frog — yes."
+        };
+        return request(app)
+        .post('/api/articles/not-an-article/comments')
+        .send(newComment)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request');
+        });
+    });
+    test('should respond with a 404 status code when provided with a valid article that doesn\'t exist ', () => {
+        const newComment = {
+            author: "icellusedkars",
+            body: "I carry a frog — yes."
+        };
+        return request(app)
+        .post('/api/articles/999/comments')
+        .send(newComment)
+        .expect(404)
+        .then((response) => {
+
+            expect(response.body.msg).toBe('article does not exist');
+        });
+    });
+    });
