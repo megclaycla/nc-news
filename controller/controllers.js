@@ -3,7 +3,8 @@ const {
     selectArticleById, 
     selectArticles, 
     selectCommentsByArticleId, 
-    postCommentToArticle 
+    postCommentToArticle,
+    patchVotesOnArticle 
 } = require('../model/models')
 const endpoints = require("../endpoints.json");
 
@@ -60,8 +61,20 @@ const postCommentToArticleController = (request, response, next) => {
     const commentToPost = request.body
     postCommentToArticle(article_id, commentToPost)
     .then((postedComment) => {
-        console.log("posted comment >>>>", postedComment)
         return response.status(201).send(postedComment);
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
+
+const patchArticleById = (request, response, next) => {
+    const { article_id } = request.params
+    const numberToUpdateBy = request.body
+
+    patchVotesOnArticle(article_id, numberToUpdateBy)
+    .then((updatedArticle) => {
+        return response.status(200).send(updatedArticle)
     })
     .catch((err) => {
         next(err)
@@ -74,5 +87,6 @@ module.exports = {
     getArticleById, 
     getArticles, 
     getCommentsByArticleId, 
-    postCommentToArticleController
+    postCommentToArticleController,
+    patchArticleById
 };
