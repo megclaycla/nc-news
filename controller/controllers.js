@@ -5,7 +5,8 @@ const {
     selectCommentsByArticleId, 
     postCommentToArticle,
     patchVotesOnArticle, 
-    removeCommentById
+    removeCommentById,
+    selectUsers
 } = require('../model/models')
 const endpoints = require("../endpoints.json");
 
@@ -92,6 +93,15 @@ const deleteCommentById = (request, response, next) => {
     })
 }
 
+const getUsers = (request, response, next) => {
+    selectUsers()
+    .then((users) => {
+        return response.status(200).send({ users })
+    })
+    .catch((err) => {
+        next(err)
+    })
+}
 module.exports = {
     getTopics, 
     getEndpoints, 
@@ -100,5 +110,6 @@ module.exports = {
     getCommentsByArticleId, 
     postCommentToArticleController,
     patchArticleById,
-    deleteCommentById
+    deleteCommentById,
+    getUsers
 };
