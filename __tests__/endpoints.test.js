@@ -261,24 +261,12 @@ describe('POST /api/articles/:article_id/comments', () => {
         .send(newComment)
         .expect(201)
         .then((response) => {
-        //const date = new Date()
             expect(typeof response.body.comment_id).toBe('number')
-            expect(typeof response.body.article_id).toBe('number')
-            expect(typeof response.body.author).toBe('string')
-            expect(typeof response.body.body).toBe('string')
-            expect(typeof response.body.votes).toBe('number')
+            expect(response.body.article_id).toBe(1)
+            expect(response.body.author).toBe("icellusedkars")
+            expect(response.body.body).toBe("I carry a frog — yes.",)
+            expect(response.body.votes).toBe(0)
             expect(typeof response.body.created_at).toBe('string')
-           /* I originally tested for the exact values but I was getting a discrepancy
-           between my timestamps. Unsure how to resolve this but wanted to mention it as
-           i think it's the right test to do
-           ({
-                comment_id: 19,
-                article_id: 1,
-                author: "icellusedkars",
-                body: "I carry a frog — yes.",
-                votes: 0,
-                created_at: date.toJSON()
-        }) */
         })
     });
     test('should respond with a 400 status code when provided with an invalid article', () => {
@@ -309,3 +297,53 @@ describe('POST /api/articles/:article_id/comments', () => {
         });
     });
     });
+
+describe.only('PATCH /api/articles/:article_id', () => {
+    test('200: responds with updated article', () => {
+        const updateVotes = { inc_votes: 1 };
+        return request(app)
+        .patch('/api/articles/1')
+        .send(updateVotes)
+        .expect(200)
+        .then((response) => {
+            expect(response.body.article_id).toBe(1)
+            expect(response.body.title).toBe('Living in the shadow of a great man')
+            expect(response.body.author).toBe('butter_bridge')
+            expect(response.body.body).toBe('I find this existence challenging',)
+            expect(response.body.votes).toBe(101)
+            expect(typeof response.body.created_at).toBe('string')
+            expect(response.body.article_img_url).toBe('https://images.pexels.com/photos/158651/news-newsletter-newspaper-information-158651.jpeg?w=700&h=700')
+        })
+    });
+    test('should respond with a 400 status code when provided with an invalid article', () => {
+        const updateVotes = { inc_votes: 1 };
+        return request(app)
+        .patch('/api/articles/dog')
+        .send(updateVotes)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request');
+        });
+    });
+    test('should respond with a 404 status code when provided with a valid article that doesn\'t exist ', () => {
+        const updateVotes = { inc_votes: 1 };
+        return request(app)
+        .patch('/api/articles/999999')
+        .send(updateVotes)
+        .expect(404)
+        .then((response) => {
+
+            expect(response.body.msg).toBe('article does not exist');
+        });
+    });
+    test('should respond with a 400 status code when provided with an invalid vote number', () => {
+        const updateVotes = { inc_votes: 'cat' };
+        return request(app)
+        .patch('/api/articles/1')
+        .send(updateVotes)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('Bad request');
+        });
+    });
+});
