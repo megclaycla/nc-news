@@ -27,7 +27,7 @@ const getEndpoints = (request, response, next) => {
 
 const getArticleById = (request, response, next) => {
     const article_id = request.params.article_id
-    selectArticleById((article_id))
+    selectArticleById(article_id)
     .then((articles) => {
         return response.status(200).send({ articles })
     })
@@ -43,7 +43,6 @@ const getArticles = (request, response, next) => {
         return response.status(200).send({ articles })
     })
     .catch((err) => {
-        console.log("err>>>>>", err)
         next(err)
     });
 }
