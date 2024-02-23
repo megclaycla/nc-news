@@ -37,8 +37,8 @@ const getArticleById = (request, response, next) => {
 };
 
 const getArticles = (request, response, next) => {
-    const   { topic } = request.query
-    selectArticles(topic)
+    const   { topic, sort_by } = request.query
+    selectArticles(topic, sort_by)
     .then((articles) => {
         return response.status(200).send({ articles })
     })
