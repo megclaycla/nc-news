@@ -475,3 +475,41 @@ describe('GET /api/articles by topic query', () => {
         });
     });
 });
+
+describe.only('GET /api/articles (sorting queries)', () => {
+    test('articles should be sorted by created_at date by default ', () => {
+        return request(app)
+        .get('/api/articles?')
+        .expect(200)
+        .then((response) => {
+            const { articles } = response.body
+            expect(articles).toBeSortedBy('created_at', {descending: true})
+        })
+    })
+    test('articles should be in descending order by default', () => {
+        return request(app)
+        .get('/api/articles?sort_by=votes')
+        .expect(200)
+        .then((response) => {
+            const { articles } = response.body
+            expect(articles).toBeSortedBy('votes', {descending: true})
+        })
+    });
+    test('400: should respond with an appropriate status and error message when passed a column that doesn\'t exist', () => {
+        return request(app)
+        .get('/api/articles?sort_by=voters')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    })
+    test('400: should respond with an appropriate status and error message when passed an invalid order', () => {
+        return request(app)
+        .get('/api/articles?sort_by=votes?order=DISC')
+        .expect(400)
+        .then((response) => {
+            expect(response.body.msg).toBe('bad request');
+        });
+    })
+});
+
