@@ -1,4 +1,5 @@
 const db = require('../db/connection')
+const fs = require("fs/promises")
 
 function selectTopics() {
     return db.query('SELECT * FROM topics;')
@@ -18,7 +19,7 @@ function selectArticleById(article_id){
 }
 
 function selectArticles(query, sort_by = 'created_at', order = 'DESC') {
-    const validSortBys = ['created_at', 'votes']
+    const validSortBys = ['created_at', 'votes', 'topic']
     const validOrders = ['ASC', 'DESC']
 
     if(!validSortBys.includes(sort_by)) {
@@ -28,35 +29,29 @@ function selectArticles(query, sort_by = 'created_at', order = 'DESC') {
         return Promise.reject({status: 400, msg: "bad request"})
     }
     
-    const queryVals = []
-
     let sqlString = `SELECT articles.author, articles.title, articles.article_id, articles.topic, articles.created_at, articles.votes, articles.article_img_url, COUNT(comments.comment_id)::INT AS comment_count
     FROM articles
     LEFT JOIN comments
-    ON articles.article_id = comments.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC`
+    ON articles.article_id = comments.article_id`
+    const queryVals = []
 
-
-    if(query){
-        if(sqlString.length){
-            sqlString += ' AND';
-        } else {
-            sqlString += ` WHERE query = $1`
-        }
+    
+    if(query) {
+        sqlString += ` WHERE articles.topic = $1`
         queryVals.push(query)
-        sqlString += ` column_name = ${queryVals.length}`
     }
 
-    // sqlString += ` ORDER BY ${sort_by} ${order}`
+
+    sqlString += ` GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
+
 
     return db.query(sqlString, queryVals)
     .then((result) => {
+        if(result.rows.length === 0) {
+            return []
+        }
         return result.rows;
     })
-    .catch((err) => {
-        console.log(err)
-    });
 };
 
 function selectCommentsByArticleId(article_id){
@@ -80,10 +75,11 @@ function postCommentToArticle(article_id, {author, body} ){
             return Promise.reject({status: 404, msg: 'article does not exist'})
         }
         return rows[0]
-    }) 
+    })
+
 }
 
-function patchVotesOnArticle(article_id, {inc_votes}) {
+function patchVotesOnArticle(article_id, {inc_votes = 0}) {
     return db.query(`UPDATE articles
     SET votes = votes + $1
     WHERE article_id = $2

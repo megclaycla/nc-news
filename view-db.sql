@@ -11,3 +11,6 @@ ORDER BY articles.created_at DESC;
 
 
 
+SELECT * FROM topics;
+
+SELECT * FROM articles;
