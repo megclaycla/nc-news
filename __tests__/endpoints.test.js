@@ -476,7 +476,7 @@ describe('GET /api/articles by topic query', () => {
     });
 });
 
-describe.only('GET /api/articles (sorting queries)', () => {
+describe('GET /api/articles (sorting queries)', () => {
     test('articles should be sorted by created_at date by default ', () => {
         return request(app)
         .get('/api/articles?')
