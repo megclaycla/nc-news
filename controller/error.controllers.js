@@ -14,7 +14,7 @@ function handleCustomErrors(err, request, response, next){
         if(err.code === '22P02'){
             response.status(400).send({msg: "Bad request"})
             } else if(err.code === '23503') {
-                response.status(404).send({msg: 'article does not exist'})
+                response.status(404).send({msg: 'does not exist'})
             } else next(err)
     }
 

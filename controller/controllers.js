@@ -37,12 +37,13 @@ const getArticleById = (request, response, next) => {
 };
 
 const getArticles = (request, response, next) => {
-    const { query, sort_by } = request.query
-    selectArticles(query, sort_by)
+    const   { topic } = request.query
+    selectArticles(topic)
     .then((articles) => {
         return response.status(200).send({ articles })
     })
     .catch((err) => {
+        console.log("err>>>>>", err)
         next(err)
     });
 }
@@ -102,6 +103,7 @@ const getUsers = (request, response, next) => {
         next(err)
     })
 }
+
 module.exports = {
     getTopics, 
     getEndpoints, 
