@@ -25,7 +25,8 @@ function selectArticleById(article_id){
 }
 
 function selectArticles(query, sort_by = 'created_at', order = 'DESC') {
-    const validSortBys = ['created_at', 'votes', 'topic']
+    const validSortBys = ['created_at', 'votes', 'topic', 'comment_count']
+    
     const validOrders = ['ASC', 'DESC']
 
     if(!validSortBys.includes(sort_by)) {
